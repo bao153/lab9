@@ -24,6 +24,13 @@
       width: 240px;
     }
   </style>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "b36d552c219d4c3d97cafef2d06d6330"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>  
 </head>
 <body>
   <fieldset>
@@ -56,17 +63,120 @@
   </section>
 
   <script>
+    class CalculationError extends Error {
+      constructor(message) {
+        super(message); 
+        this.name = "CaculationError"; 
+      }
+    }
+
+    class SummandFetchingError extends Error {
+      constructor(message) {
+        super(message); 
+        this.name = "SummandFetchingError"; 
+      }
+    }
+
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        throw new CalculationError("Something is wrong with the calculator")
+      }
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+    let output = document.querySelector('output');
     // TODO - Make buttons functional
+    // console log demo
+    errorBtns[0].addEventListener("click", () => {
+      console.log("Output logged: " + output.value);
+    });
+
+    // console error demo
+    errorBtns[1].addEventListener("click", () => {
+      console.error("Output as an error: " + output.value);
+    });
+
+    // console dir demo
+    errorBtns[2].addEventListener("click", () => {
+      console.dir(output);
+    });
+
+    // console dirxml demo
+    errorBtns[3].addEventListener("click", () => {
+      console.dirxml(output);
+    });
+
+    // console group demo
+    errorBtns[4].addEventListener("click", () => {
+      console.group("Console Group Start");
+    }); 
+
+    // console groupEnd demo
+    errorBtns[5].addEventListener("click", () => {
+      console.groupEnd("Console Group End");
+    });
+
+    // console table demo
+    errorBtns[6].addEventListener("click", () => {
+      let tableArray = [
+      {
+        api: "console",
+        method: "log",
+        value: "CHAMP"
+      }, 
+      {
+        api: "console",
+        method: "table",
+        value: output.value
+      },
+      {
+        api: "console",
+        method: "error",
+        value: "CHAMP TOO"
+      }];
+      
+      console.table(tableArray);
+    });
+
+    // console time demo
+    errorBtns[7].addEventListener("click", () => {
+      console.log("Timer Start")
+      console.time();
+    });
+
+    // console timeEnd demo
+    errorBtns[8].addEventListener("click", () => {
+      console.timeEnd();
+      console.log("Timer End")
+    });
+
+    // console trace demo
+    errorBtns[9].addEventListener("click", () => {
+      const first = () => { second(); };
+      const second = () => { third(); };
+      const third = () => { fourth(); };
+      const fourth = () => { console.trace(); };
+      first();
+    });
+
+    // trigger global error demo
+    errorBtns[10].addEventListener("click", () => {
+      try {
+        console.log("Fetching summands...");
+        throw new SummandFetchingError("Summands compromised in the X Æ A-13-th dimension during fetching");
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    TrackJS.track('Testing TrackJS!');
   </script>
 </body>
 </html>
